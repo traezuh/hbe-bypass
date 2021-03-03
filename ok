@@ -1,0 +1,21 @@
+local raw = getrawmetatable(game)
+local caller = checkcaller
+local closure = newcclosure
+local callingmethod = getnamecallmethod
+
+setreadonly(raw,false)
+
+local namecall = raw.__namecall
+raw.__namecall = closure(function(self,...)
+   local method = callingmethod()
+   local args = {...}
+   if args[4] == "throw" then --checks if the 4th argument is the string throw, which if it is it means that this thing is the hit remote event thing so we can continue
+       if args[6] == "HumanoidRootPart" then --checks the 6th argument to see what part you hit, if its humanoidrootpart it will continue.
+           args[7] = Vector3.new(2,2,1) --sets the 7th argument which is the original humanoidrootpart size and sets it to normal size. this is what the bypass is, thats it.
+           return namecall(self,unpack(args))
+       end
+   end
+   return namecall(self,...)
+end)
+
+setreadonly(raw,true)
